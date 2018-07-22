@@ -36,7 +36,7 @@ def get_command(origem, destino):
     
 @app.route('/')
 def compare_all():
-    ##git_fetch()
+    git_fetch()
 
     logs = {}
 
