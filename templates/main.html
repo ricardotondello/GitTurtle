@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="static/css/materialize.min.css"  media="screen,projection"/>
+            
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      
+      <!--Import jQuery before materialize.js-->
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script type="text/javascript" src="static/js/materialize.min.js"></script>
+    
+    </head>
+
+    <body class="grey lighten-5">
+    
+      <script>
+          function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10)
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                    window.location.reload(true);
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            var fiveMinutes = 60 * 5,
+                display = document.querySelector('#time');
+            startTimer(fiveMinutes, display);
+        };
+          
+      </script>
+      
+      
+      {% block body %}
+     
+      <!-- Nome dos arquivos -->
+      <div class="container" >
+            
+        
+      
+          <div class="row">
+
+            <div class="col s9">
+              <h4>Filas de sincronizações</h4>
+            </div>
+            <div class="col s1">
+              <i class="medium material-icons">av_timer</i>
+            </div>
+            <div class="col s2">
+              <h4><span id="time">05:00</span></h4>
+            </div>
+
+          </div>
+    
+    
+      </div>
+      
+      <!-- Relatório-->
+      <div class="row">
+        {% include "report.html" %}
+       </div>
+
+      <blockquote>
+        <footer>Ricardo Tondello. Equipe MP - Softplan - 2018</footer>
+      </blockquote>
+
+      {% endblock %} 
+    </body>
+  </html>
+
+
+
+
