@@ -1,7 +1,9 @@
 import os
-from flask import Flask, flash, render_template, request, abort
+from flask import Flask, flash, render_template, request, abort, session
 import subprocess
 from os import path
+from pathlib import Path
+import json
 
 ##comando_log = 'log --graph -2 --pretty=format:"%Cred%h%Creset - %C(bold blue)<%an> -%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset" --abbrev-commit --date=relative --no-merges '
 comando_log = 'log --graph -2 --pretty=format:"%an - %d - %s - %cr" --abbrev-commit --date=relative --no-merges '
@@ -36,6 +38,7 @@ def get_command(origem, destino):
     
 @app.route('/')
 def compare_all():
+    get_config()
     git_fetch()
 
     logs = {}
@@ -62,8 +65,7 @@ def tratar_resultado(array_commit):
     return comits
 
 def execute_command(comando):
-    repository  = path.dirname('D:/dsv/GIT/UNJSAJ/saj-mp/')
-    some_command = 'D: && ' + ' cd "' + repository + '" && git ' + comando
+    some_command = 'D: && ' + ' cd "' + session.get('repository') + '" && git ' + comando
 
     p = subprocess.Popen(some_command, stdout=subprocess.PIPE, shell=True)
 
@@ -71,6 +73,21 @@ def execute_command(comando):
 
     p_status = p.wait()
     return output.decode("utf-8")
+
+def get_config():
+    path = Path().absolute()
+    session['settings_path'] = str(path) + '\\settings.json'
+
+    if not validar_file(session.get('settings_path')):
+        return
+    
+    config                  = json.load(open(session.get('settings_path')))
+    session['repository']   = config["repository"]
+    
+def validar_file(ps_file):
+    if not ps_file:
+        return False
+    return (os.path.isfile(ps_file) and os.access(ps_file, os.R_OK))
 
 def load_remotes():
     results = str(execute_command("branch -r")).split('\\n')

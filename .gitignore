@@ -1,0 +1,6 @@
+/__pycache__/
+/setup/build/
+/setup/dist/
+/setup/GitTurtle.spec
+/setup/Output/
+*.log
