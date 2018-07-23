@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 
 ##comando_log = 'log --graph -2 --pretty=format:"%Cred%h%Creset - %C(bold blue)<%an> -%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset" --abbrev-commit --date=relative --no-merges '
-comando_log = 'log --graph -2 --pretty=format:"%an - %d - %s - %cr" --abbrev-commit --date=relative --no-merges '
+comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --no-merges --reverse '
 
 prefixo = "remotes/origin/"
 
@@ -56,16 +56,17 @@ def tratar_resultado(array_commit):
     comits = []
     for co in array_commit:
         aux = commit()
-        aux.autor         = co.split('-')[0].strip()
-        aux.branch        = co.split('-')[1].strip()
-        aux.description   = co.split('-')[2].strip()
-        aux.date_relative = co.split('-')[3].strip()
+        aux.autor         = co.split('|')[0].strip()
+        aux.branch        = co.split('|')[1].strip()
+        aux.description   = co.split('|')[2].strip()
+        aux.date_relative = co.split('|')[3].strip()
         comits.append(aux)
 
     return comits
 
 def execute_command(comando):
-    some_command = 'D: && ' + ' cd "' + session.get('repository') + '" && git ' + comando
+    first_letter = session.get('repository')[0]
+    some_command = first_letter + ': && ' + ' cd "' + session.get('repository') + '" && git ' + comando
 
     p = subprocess.Popen(some_command, stdout=subprocess.PIPE, shell=True)
 
