@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 
 ##comando_log = 'log --graph -2 --pretty=format:"%Cred%h%Creset - %C(bold blue)<%an> -%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset" --abbrev-commit --date=relative --no-merges '
-comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --no-merges --reverse '
+comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --reverse '
 
 prefixo = "remotes/origin/"
 
@@ -60,7 +60,10 @@ def tratar_resultado(array_commit):
         aux.branch        = co.split('|')[1].strip()
         aux.description   = co.split('|')[2].strip()
         aux.date_relative = co.split('|')[3].strip()
-        comits.append(aux)
+
+        ##ignorar merge branches autmaticas.
+        if not ("Merge branch '" in aux.description):
+            comits.append(aux)
 
     return comits
 
