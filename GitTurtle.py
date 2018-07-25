@@ -9,14 +9,7 @@ import json
 comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --reverse '
 
 prefixo = "remotes/origin/"
-
-versoes = {}
-versoes['301sp'] = "release/3.0.1/servicepack"
-versoes['301pr'] = "release/3.0.1/producao"
-versoes['303sp'] = "release/3.0.3/servicepack"
-versoes['303pr'] = "release/3.0.3/producao"
-versoes['310sp'] = "release/3.1.0/servicepack"
-versoes['master'] = "master"
+branch_logs = []
 
 class commit:
     kind = 'Commit info'
@@ -27,6 +20,15 @@ class commit:
         self.branch         = ''
         self.date_relative  = ''
         
+class branch_log:
+    kind = 'Armazena o log da branch'
+    def __init__(self):
+        self.origin      = ''
+        self.destiny     = ''
+        self.description = ''
+        self.order       = 0
+        self.color       = 'Red'
+        self.comits      = []
 
 app = Flask(__name__)
 
@@ -34,23 +36,38 @@ def git_fetch():
     execute_command("fetch --all")
 
 def get_command(origem, destino):
-    return "{gitlog}{branchorigem}..{branchdestino}".format(gitlog=comando_log, branchorigem=prefixo + versoes[destino], branchdestino=prefixo + versoes[origem])
+    return "{gitlog}{branchorigem}..{branchdestino}".format(gitlog=comando_log, branchorigem=prefixo + destino, branchdestino=prefixo + origem)
     
 @app.route('/')
 def compare_all():
+    global branch_logs
+    branch_logs = []
+
     get_config()
     git_fetch()
-
-    logs = {}
-
-    logs['/3.0.1/servicepack to 3.0.1/producao']    = tratar_resultado(execute_command(get_command('301sp', '301pr')).splitlines())
-    logs['/3.0.1/servicepack to 3.0.3/servicepack'] = tratar_resultado(execute_command(get_command('301sp', '303sp')).splitlines())
-    logs['/3.0.3/servicepack to 3.0.3/producao']    = tratar_resultado(execute_command(get_command('303sp', '303pr')).splitlines())
-    logs['/3.0.3/servicepack to 3.1.0/servicepack'] = tratar_resultado(execute_command(get_command('303sp', '310sp')).splitlines())
-    logs['/3.1.0/servicepack to master']            = tratar_resultado(execute_command(get_command('310sp', 'master')).splitlines())
-    
+    add_branchs_log()
    
-    return render_template('main.html', logs=logs)
+    return render_template('main.html', branch_logs=branch_logs)
+
+def add_branchs_log():
+    global branch_logs
+    branch_logs.append(add_branch('release/3.0.1/servicepack', 'release/3.0.1/producao'   , '3.0.1 SP to 3.0.1 P' , 0, 'green'))
+    branch_logs.append(add_branch('release/3.0.1/servicepack', 'release/3.0.3/servicepack', '3.0.1 SP to 3.0.3 SP', 1, 'blue'))
+    branch_logs.append(add_branch('release/3.0.3/servicepack', 'release/3.0.3/producao'   , '3.0.3 SP to 3.0.3 P' , 2, 'red'))
+    branch_logs.append(add_branch('release/3.0.3/servicepack', 'release/3.1.0/servicepack', '3.0.3 SP to 3.1.0 SP', 3, 'blue-grey'))
+    branch_logs.append(add_branch('release/3.1.0/servicepack', 'master'                   , '3.1.0 SP to Master'  , 4, 'orange'))
+    
+def add_branch(origin, destiny, description, order, color):
+
+    b_log = branch_log()
+    b_log.origin      = origin
+    b_log.destiny     = destiny
+    b_log.description = '{0} to {1}'.format(origin, destiny) if not description else description
+    b_log.order       = order
+    b_log.color       = 'Red' if not color else color
+    b_log.comits      = tratar_resultado(execute_command(get_command(origin, destiny)).splitlines())
+
+    return b_log
 
 def tratar_resultado(array_commit):
     comits = []

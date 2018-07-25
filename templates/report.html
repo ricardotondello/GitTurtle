@@ -21,120 +21,42 @@
       {% block body %}
 
       <div class="container" >
-      
-        <!-- linha 1 -->
-        <div class="row">
-          <div class="col s12 m6">
+      	{% for branch in branch_logs %}
 
-            <h4 class="header">3.0.1 SP to 3.0.1 P 
-              <a href="#!" onclick="unhide('301P');return false;" >
-                <span class="new badge" data-badge-caption="Pendentes">{{ logs['/3.0.1/servicepack to 3.0.1/producao']|count }}
-                </span>
-              </a>
-            </h4>
-            <ul class="collection">
-              <div id="301P">
-                {% for aux in logs['/3.0.1/servicepack to 3.0.1/producao'] %}
-                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
-                    <i class="material-icons circle green">directions_run</i>
-                    <span class="title  flow-text">{{aux.autor}}</span>
-                    <p>{{ '{0} - {1} ({2})'.format(aux.description, aux.branch, aux.date_relative) }}</p>
-                  </li>
-                {% endfor %}
-              </div>
-            </ul>
-           </div>
-          <div class="col s12 m6">
-            <h4 class="header">3.0.1 SP to 3.0.3 SP
-              <a href="#!" onclick="unhide('303SP');return false;" >
-                <span class="new badge" data-badge-caption="Pendentes">{{ logs['/3.0.1/servicepack to 3.0.3/servicepack']|count }}
-                </span>
-              </a>
-            </h4>
-            <ul class="collection">
-              <div id="303SP">
-                {% for aux in logs['/3.0.1/servicepack to 3.0.3/servicepack'] %}
-                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
-                    <i class="material-icons circle blue">directions_run</i>
-                    <span class="title  flow-text">{{aux.autor}}</span>
-                      <p>{{ '{0} - {1} ({2})'.format(aux.description, aux.branch, aux.date_relative) }}</p>
-                  </li>
-                {% endfor %}
-              </div>
-            </ul>
-          </div>
-        </div>
+      		{% if (loop.index % 2 == 0) %}
+      			<div class="row">
+      		{% endif %}
+      				<div class="col s12 m6">
 
-        <!-- linha 2 -->
-        <div class="row">
-          <div class="col s12 m6">
-            <h4 class="header">3.0.3 SP to 3.0.3 P
-              <a href="#!" onclick="unhide('303P');return false;" >
-                <span class="new badge" data-badge-caption="Pendentes">{{ logs['/3.0.3/servicepack to 3.0.3/producao']|count }}
-                </span>
-              </a>
-            </h4>
-              <ul class="collection">
-                <div id="303P">
-                  {% for aux in logs['/3.0.3/servicepack to 3.0.3/producao'] %}
-                    <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
-                      <i class="material-icons circle red">directions_run</i>
-                      <span class="title  flow-text">{{aux.autor}}</span>
-                      <p>{{ '{0} - {1} ({2})'.format(aux.description, aux.branch, aux.date_relative) }}</p>
-                    </li>
-                  {% endfor %}
-                </div>
-              </ul>                 
-           </div>
-          <div class="col s12 m6">
-            <h4 class="header">3.0.3 SP to 3.1.0 SP
-              <a href="#!" onclick="unhide('301SP');return false;" >
-                <span class="new badge" data-badge-caption="Pendentes">{{ logs['/3.0.3/servicepack to 3.1.0/servicepack']|count }}
-                </span>
-              </a>
-            </h4>
-            <ul class="collection">
-              <div id="301SP">
-                {% for aux in logs['/3.0.3/servicepack to 3.1.0/servicepack'] %}
-                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
-                    <i class="material-icons circle blue-grey">directions_run</i>
-                    <span class="title  flow-text">{{aux.autor}}</span>
-                      <p>{{ '{0} - {1} ({2})'.format(aux.description, aux.branch, aux.date_relative) }}</p>
-                  </li>
-                {% endfor %}
-              </div>
-            </ul>
-            
-          </div>
-        </div>        
-         
+						<h4 class="header">{{ branch.description }}
+							<a href="#!" onclick="unhide('{{ branch.destiny }}');return false;" >
+							<span class="new badge" data-badge-caption="Pendentes">{{ branch.comits|count }}</span></a>
+						</h4>
+
+						<ul class="collection">
+							<div id="{{ branch.destiny }}">
+							{% for comits in branch.comits %}
+				                 
+			                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
+			                    <i class="material-icons circle {{ '{0}'.format(branch.color) }}">directions_run</i>
+			                    <span class="title  flow-text">{{comits.autor}}</span>
+			                    <p>{{ '{0} - {1} ({2})'.format(comits.description, comits.branch, comits.date_relative) }}</p>
+			                  </li>
+
+							{% endfor%}
+							</div>
+						</ul>
+
+      				</div> <!-- coluna -->
+          {% if (loop.index % 2 == 0) %}
+      			</div> <!-- row -->
+      		{% endif %}
+      	{% endfor %}
+      </div> <!-- container -->
         
-        <div class="row">
-          <div class="col s12">
-            <h4 class="header">3.1.0 SP to master
-              <a href="#!" onclick="unhide('master');return false;" >
-                <span class="new badge" data-badge-caption="Pendentes">{{ logs['/3.1.0/servicepack to master']|count }}
-                </span>
-              </a>
-            </h4>
-            <ul class="collection">
-              <div id="master">
-                {% for aux in logs['/3.1.0/servicepack to master'] %}
-                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">
-                    <i class="material-icons circle orange">directions_run</i>
-                    <span class="title  flow-text">{{aux.autor}}</span>
-                      <p>{{ '{0} - {1} ({2})'.format(aux.description, aux.branch, aux.date_relative) }}</p>
-                  </li>
-                {% endfor %}
-              </div>
-            </ul>
-
-          </div>
-        </div>
-        
-      </div> 
 
       {% endblock %}
+
 
     </body>      
   </html>
