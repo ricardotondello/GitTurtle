@@ -4,7 +4,12 @@ import subprocess
 from os import path
 from pathlib import Path
 import json
+import requests
+import threading
+import time
 
+PORT=5010
+SERVER='0.0.0.0'
 ##comando_log = 'log --graph -2 --pretty=format:"%Cred%h%Creset - %C(bold blue)<%an> -%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset" --abbrev-commit --date=relative --no-merges '
 comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --reverse '
 
@@ -32,6 +37,40 @@ class branch_log:
 
 app = Flask(__name__)
 
+@app.before_first_request
+def activate_job():
+    def run_job():
+        while True:
+            print("git fetching...")
+            git_fetch()
+            time.sleep(60)
+
+    thread = threading.Thread(target=run_job)
+    thread.start()
+
+def start_runner():
+    def start_loop():
+        not_started = True
+        while not_started:
+            print('In start loop')
+            try:
+                r = requests.get('http://127.0.0.1:{0}/hl'.format(PORT))
+                if r.status_code == 200:
+                    print('Server started, quiting start_loop')
+                    not_started = False
+                print(r.status_code)
+            except:
+                print('Server not yet started')
+            time.sleep(2)
+    print('Started runner')
+    thread = threading.Thread(target=start_loop)
+    thread.start()
+
+@app.route("/hl")
+def hello():
+    return "Hello World!"
+
+
 def git_fetch():
     execute_command("fetch --all")
 
@@ -43,11 +82,11 @@ def compare_all():
     global branch_logs
     branch_logs = []
 
-    get_config()
-    git_fetch()
     load_releases_from_file()
    
-    return render_template('main.html', branch_logs=branch_logs)
+    branch_logs_sum =  sum([ len(comits.comits) for comits in branch_logs ])
+
+    return render_template('main.html', branch_logs=branch_logs, branch_logs_sum=branch_logs_sum)
 
 def load_releases_from_file():
     global branch_logs
@@ -91,8 +130,9 @@ def tratar_resultado(array_commit):
     return comits
 
 def execute_command(comando):
-    first_letter = session.get('repository')[0]
-    some_command = first_letter + ': && ' + ' cd "' + session.get('repository') + '" && git ' + comando
+    repository = get_config()
+    first_letter = repository[0]
+    some_command = first_letter + ': && ' + ' cd "' + repository + '" && git ' + comando
 
     p = subprocess.Popen(some_command, stdout=subprocess.PIPE, shell=True)
 
@@ -103,13 +143,13 @@ def execute_command(comando):
 
 def get_config():
     path = Path().absolute()
-    session['settings_path'] = str(path) + '\\settings.json'
+    settings_path = str(path) + '\\settings.json'
 
-    if not validar_file(session.get('settings_path')):
+    if not validar_file(settings_path):
         return
     
-    config                  = json.load(open(session.get('settings_path')))
-    session['repository']   = config["repository"]
+    config                  = json.load(open(settings_path))
+    return config["repository"]
     
 def validar_file(ps_file):
     if not ps_file:
@@ -129,7 +169,8 @@ def load_remotes():
     return remote_branches
 
 if __name__ == "__main__":
+    start_runner()
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0', port=5010)
+    app.run(host=SERVER, port=PORT)
 
     
