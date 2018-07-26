@@ -45,18 +45,24 @@ def compare_all():
 
     get_config()
     git_fetch()
-    add_branchs_log()
+    load_releases_from_file()
    
     return render_template('main.html', branch_logs=branch_logs)
 
-def add_branchs_log():
+def load_releases_from_file():
     global branch_logs
-    branch_logs.append(add_branch('release/3.0.1/servicepack', 'release/3.0.1/producao'   , '3.0.1 SP to 3.0.1 P' , 0, 'green'))
-    branch_logs.append(add_branch('release/3.0.1/servicepack', 'release/3.0.3/servicepack', '3.0.1 SP to 3.0.3 SP', 1, 'blue'))
-    branch_logs.append(add_branch('release/3.0.3/servicepack', 'release/3.0.3/producao'   , '3.0.3 SP to 3.0.3 P' , 2, 'red'))
-    branch_logs.append(add_branch('release/3.0.3/servicepack', 'release/3.1.0/servicepack', '3.0.3 SP to 3.1.0 SP', 3, 'blue-grey'))
-    branch_logs.append(add_branch('release/3.1.0/servicepack', 'master'                   , '3.1.0 SP to Master'  , 4, 'orange'))
+    path = Path().absolute()
+    release_path = str(path) + '\\releases.json'
+
+    if not validar_file(release_path):
+        return
     
+    with open(release_path, 'r') as data_file:
+        release_array = json.loads(data_file.read())
+    
+    for release in release_array['releases']:
+        branch_logs.append(add_branch(release["origin"], release["destiny"], release["description"], release["order"], release["color"]))
+
 def add_branch(origin, destiny, description, order, color):
 
     b_log = branch_log()
