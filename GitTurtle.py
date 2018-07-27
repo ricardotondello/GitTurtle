@@ -34,6 +34,7 @@ class branch_log:
         self.order       = 0
         self.color       = 'Red'
         self.comits      = []
+        self.blocked     = False
 
 app = Flask(__name__)
 
@@ -100,9 +101,9 @@ def load_releases_from_file():
         release_array = json.loads(data_file.read())
     
     for release in release_array['releases']:
-        branch_logs.append(add_branch(release["origin"], release["destiny"], release["description"], release["order"], release["color"]))
+        branch_logs.append(add_branch(release["origin"], release["destiny"], release["description"], release["order"], release["color"], release["blocked"]))
 
-def add_branch(origin, destiny, description, order, color):
+def add_branch(origin, destiny, description, order, color, blocked):
 
     b_log = branch_log()
     b_log.origin      = origin
@@ -111,6 +112,7 @@ def add_branch(origin, destiny, description, order, color):
     b_log.order       = order
     b_log.color       = 'Red' if not color else color
     b_log.comits      = tratar_resultado(execute_command(get_command(origin, destiny)).splitlines())
+    b_log.blocked     = blocked
 
     return b_log
 

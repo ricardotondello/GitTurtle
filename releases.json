@@ -5,34 +5,39 @@
     "destiny"     : "release/3.0.3/servicepack",
     "description" : "3.0.1 SP to 3.0.3 SP",
     "order"       : "0",
-    "color"       : "blue"
+    "color"       : "blue",
+    "blocked"     : false
 },
 {
 	"origin"      : "release/3.0.1/servicepack",
     "destiny"     : "release/3.0.1/producao",
     "description" : "3.0.1 SP to 3.0.1 P",
     "order"       : "1",
-    "color"       : "green"
+    "color"       : "green",
+    "blocked"     : false
 },
 {	
 	"origin"      : "release/3.0.3/servicepack",
     "destiny"     : "release/3.1.0/servicepack",
     "description" : "3.0.3 SP to 3.1.0 SP",
     "order"       : "2",
-    "color"       : "blue-grey"
+    "color"       : "blue-grey",
+    "blocked"     : false
 },
 {	
 	"origin"      : "release/3.0.3/servicepack",
     "destiny"     : "release/3.0.3/producao",
     "description" : "3.0.3 SP to 3.0.3 P",
     "order"       : "3",
-    "color"       : "red"
+    "color"       : "red",
+    "blocked"     : false
 },
 {	
 	"origin"      : "release/3.1.0/servicepack",
     "destiny"     : "master",
     "description" : "3.1.0 SP to Master",
     "order"       : "4",
-    "color"       : "orange"
+    "color"       : "orange",
+    "blocked"     : false
 }]
 }

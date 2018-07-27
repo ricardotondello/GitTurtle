@@ -29,6 +29,10 @@
       				<div class="col s12 m6">
 
 						<h4 class="header">{{ branch.description }}
+            
+              {% if branch.blocked %}
+                <span class="new badge red" data-badge-caption="Bloqueada"></span>
+              {% endif %}
 							<a href="#!" onclick="unhide('{{ branch.destiny }}');return false;" >
 							<span class="new badge" data-badge-caption="Pendentes">{{ branch.comits|count }}</span></a>
 						</h4>
