@@ -10,8 +10,7 @@ import time
 
 PORT=5010
 SERVER='0.0.0.0'
-##comando_log = 'log --graph -2 --pretty=format:"%Cred%h%Creset - %C(bold blue)<%an> -%C(yellow)%d%Creset %s %Cgreen(%cr) %Creset" --abbrev-commit --date=relative --no-merges '
-comando_log = 'log  --pretty=format:"%an | %d | %s | %cr" --abbrev-commit --date=relative --reverse '
+comando_log = 'log  --pretty=format:"%an | %d | %s | %cr | %H" --abbrev-commit --date=relative --reverse '
 
 prefixo = "remotes/origin/"
 branch_logs = []
@@ -24,6 +23,7 @@ class commit:
         self.description    = ''
         self.branch         = ''
         self.date_relative  = ''
+        self.hash           = ''
         
 class branch_log:
     kind = 'Armazena o log da branch'
@@ -124,6 +124,7 @@ def tratar_resultado(array_commit):
         aux.branch        = co.split('|')[1].strip()
         aux.description   = co.split('|')[2].strip()
         aux.date_relative = co.split('|')[3].strip()
+        aux.hash          = co.split('|')[4].strip()
 
         ##ignorar merge branches autmaticas.
         if not ("Merge branch '" in aux.description):
