@@ -15,10 +15,10 @@
                 x[0].className='collection-item avatar';
             }
           }
-          function CopyTextToClipboard(text) {
+          function CopyTextToClipboard(element, text) {
             var textArea = document.createElement("textarea");
             textArea.value = text;
-            document.body.appendChild(textArea);
+            element.appendChild(textArea);
             textArea.focus();
             textArea.select();
 
@@ -30,7 +30,7 @@
               console.error('Fallback: Oops, unable to copy', err);
             }
 
-            document.body.removeChild(textArea);
+            element.removeChild(textArea);
           }
           
       </script>
@@ -65,7 +65,7 @@
                            
                           <span class="badge right-align">{{comits.hash[:8]}} 
 
-                              <a href="#!" onclick="CopyTextToClipboard('{{ comits.hash }}')" >
+                              <a href="#!" onclick="CopyTextToClipboard(this, '{{ comits.hash }}')" >
                                 <i class="tiny material-icons">content_copy</i>
                               </a>
                               
