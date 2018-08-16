@@ -56,6 +56,28 @@
 
 						<ul class="collection">
 							<div id="{{ branch.destiny }}">
+
+              {% if branch.comits|count == 0 %}
+
+                        <li class="collection-item avatar">
+                          <img src="static/images/chuck.png" alt="" class="circle">
+
+                          <span class="title flow-text">Chuck Norris</span> 
+                           
+                          <span class="badge right-align">xxxxxxxx 
+
+                              <a href="#!" onclick="CopyTextToClipboard(this, 'Eu sou o Chuck Norris!')" >
+                                <i class="tiny material-icons">content_copy</i>
+                              </a>
+                              
+                          </span>
+                          
+                          
+			                    <p>Well done!</p>
+                        </li>
+                        
+              {% endif %}
+
 							{% for comits in branch.comits %}
 				                 
 			                  <li class="collection-item avatar {{'hide' if loop.index > 2 else ''}}">

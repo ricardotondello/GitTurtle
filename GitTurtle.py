@@ -14,6 +14,7 @@ comando_log = 'log  --pretty=format:"%an | %d | %s | %cr | %H" --abbrev-commit -
 
 prefixo = "remotes/origin/"
 branch_logs = []
+executando_fetch = False
 
 class commit:
     kind = 'Commit info'
@@ -44,6 +45,7 @@ def activate_job():
         while True:
             print("git fetching...")
             git_fetch()
+            print("end fetching")
             time.sleep(60)
 
     thread = threading.Thread(target=run_job)
@@ -71,19 +73,29 @@ def start_runner():
 def hello():
     return "Hello World!"
 
-
 def git_fetch():
+    global executando_fetch
+    executando_fetch = True
     execute_command("fetch --all")
+    git_log()
+    executando_fetch = False
+
+def git_log():
+    print("iniciando logs...")
+    load_releases_from_file()
+    print("logs gravados...")
 
 def get_command(origem, destino):
     return "{gitlog}{branchorigem}..{branchdestino}".format(gitlog=comando_log, branchorigem=prefixo + destino, branchdestino=prefixo + origem)
     
 @app.route('/')
 def compare_all():
-    global branch_logs
-    branch_logs = []
+    global executando_fetch
 
-    load_releases_from_file()
+    while executando_fetch:
+        print("aguardando fetch...")
+        time.sleep(1)
+        pass
    
     branch_logs_sum =  sum([ len(comits.comits) for comits in branch_logs ])
 
@@ -91,6 +103,8 @@ def compare_all():
 
 def load_releases_from_file():
     global branch_logs
+    branch_logs = []
+
     path = Path().absolute()
     release_path = str(path) + '\\releases.json'
 
@@ -101,7 +115,7 @@ def load_releases_from_file():
         release_array = json.loads(data_file.read())
     
     for release in release_array['releases']:
-        branch_logs.append(add_branch(release["origin"], release["destiny"], release["description"], release["order"], release["color"], release["blocked"]))
+        branch_logs.append(add_branch(release["origin"], release["destiny"], release["description"], release["order"], release["color"], release.get("blocked", False)))
 
 def add_branch(origin, destiny, description, order, color, blocked):
 
@@ -134,9 +148,8 @@ def tratar_resultado(array_commit):
 
 def execute_command(comando):
     repository = get_config()
-    first_letter = repository[0]
-    some_command = first_letter + ': && ' + ' cd "' + repository + '" && git ' + comando
-
+    some_command = repository[0] + ': && ' + ' git --git-dir="' + repository[1:] + '/.git" ' + comando
+    print(some_command)
     p = subprocess.Popen(some_command, stdout=subprocess.PIPE, shell=True)
 
     (output, err) = p.communicate()  
@@ -151,7 +164,7 @@ def get_config():
     if not validar_file(settings_path):
         return
     
-    config                  = json.load(open(settings_path))
+    config = json.load(open(settings_path))
     return config["repository"]
     
 def validar_file(ps_file):
